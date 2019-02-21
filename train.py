@@ -111,30 +111,30 @@ def main(task='all'):
 
     with tf.device('/cpu:0'):
         sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
-        with tf.device('/gpu:0'): #<- remove it if you train on CPU or other GPU
-            ###======================== DEFIINE MODEL =======================###
-            ## nz is 4 as we input all Flair, T1, T1c and T2.
-            t_image = tf.placeholder('float32', [batch_size, nw, nh, nz], name='input_image')
-            ## labels are either 0 or 1
-            t_seg = tf.placeholder('float32', [batch_size, nw, nh, 1], name='target_segment')
-            ## train inference
-            net = model.u_net(t_image, is_train=True, reuse=False, n_out=1)
-            ## test inference
-            net_test = model.u_net(t_image, is_train=False, reuse=True, n_out=1)
+        # with tf.device('/gpu:0'): #<- remove it if you train on CPU or other GPU
+        ###======================== DEFIINE MODEL =======================###
+        ## nz is 4 as we input all Flair, T1, T1c and T2.
+        t_image = tf.placeholder('float32', [batch_size, nw, nh, nz], name='input_image')
+        ## labels are either 0 or 1
+        t_seg = tf.placeholder('float32', [batch_size, nw, nh, 1], name='target_segment')
+        ## train inference
+        net = model.u_net(t_image, is_train=True, reuse=False, n_out=1)
+        ## test inference
+        net_test = model.u_net(t_image, is_train=False, reuse=True, n_out=1)
 
-            ###======================== DEFINE LOSS =========================###
-            ## train losses
-            out_seg = net.outputs
-            dice_loss = 1 - tl.cost.dice_coe(out_seg, t_seg, axis=[0,1,2,3])#, 'jaccard', epsilon=1e-5)
-            iou_loss = tl.cost.iou_coe(out_seg, t_seg, axis=[0,1,2,3])
-            dice_hard = tl.cost.dice_hard_coe(out_seg, t_seg, axis=[0,1,2,3])
-            loss = dice_loss
+        ###======================== DEFINE LOSS =========================###
+        ## train losses
+        out_seg = net.outputs
+        dice_loss = 1 - tl.cost.dice_coe(out_seg, t_seg, axis=[0,1,2,3])#, 'jaccard', epsilon=1e-5)
+        iou_loss = tl.cost.iou_coe(out_seg, t_seg, axis=[0,1,2,3])
+        dice_hard = tl.cost.dice_hard_coe(out_seg, t_seg, axis=[0,1,2,3])
+        loss = dice_loss
 
-            ## test losses
-            test_out_seg = net_test.outputs
-            test_dice_loss = 1 - tl.cost.dice_coe(test_out_seg, t_seg, axis=[0,1,2,3])#, 'jaccard', epsilon=1e-5)
-            test_iou_loss = tl.cost.iou_coe(test_out_seg, t_seg, axis=[0,1,2,3])
-            test_dice_hard = tl.cost.dice_hard_coe(test_out_seg, t_seg, axis=[0,1,2,3])
+        ## test losses
+        test_out_seg = net_test.outputs
+        test_dice_loss = 1 - tl.cost.dice_coe(test_out_seg, t_seg, axis=[0,1,2,3])#, 'jaccard', epsilon=1e-5)
+        test_iou_loss = tl.cost.iou_coe(test_out_seg, t_seg, axis=[0,1,2,3])
+        test_dice_hard = tl.cost.dice_hard_coe(test_out_seg, t_seg, axis=[0,1,2,3])
 
         ###======================== DEFINE TRAIN OPTS =======================###
         t_vars = tl.layers.get_variables_with_name('u_net', True, True)
