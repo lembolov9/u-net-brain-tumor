@@ -126,16 +126,16 @@ def main(task='all'):
             ###======================== DEFINE LOSS =========================###
             ## train losses
             out_seg = net.outputs
-            dice_loss = 1 - tl.cost.dice_coe(out_seg, t_seg, axis=[0,1,2,3])#, 'jaccard', epsilon=1e-5)
-            iou_loss = tl.cost.iou_coe(out_seg, t_seg, axis=[0,1,2,3])
-            dice_hard = tl.cost.dice_hard_coe(out_seg, t_seg, axis=[0,1,2,3])
+            dice_loss = 1 - tl.cost.dice_coe(out_seg, t_seg, axis=(0,1,2,3))#, 'jaccard', epsilon=1e-5)
+            iou_loss = tl.cost.iou_coe(out_seg, t_seg, axis=(0,1,2,3))
+            dice_hard = tl.cost.dice_hard_coe(out_seg, t_seg, axis=(0,1,2,3))
             loss = dice_loss
 
             ## test losses
             test_out_seg = net_test.outputs
-            test_dice_loss = 1 - tl.cost.dice_coe(test_out_seg, t_seg, axis=[0,1,2,3])#, 'jaccard', epsilon=1e-5)
-            test_iou_loss = tl.cost.iou_coe(test_out_seg, t_seg, axis=[0,1,2,3])
-            test_dice_hard = tl.cost.dice_hard_coe(test_out_seg, t_seg, axis=[0,1,2,3])
+            test_dice_loss = 1 - tl.cost.dice_coe(test_out_seg, t_seg, axis=(0,1,2,3))#, 'jaccard', epsilon=1e-5)
+            test_iou_loss = tl.cost.iou_coe(test_out_seg, t_seg, axis=(0,1,2,3))
+            test_dice_hard = tl.cost.dice_hard_coe(test_out_seg, t_seg, axis=(0,1,2,3))
 
         ###======================== DEFINE TRAIN OPTS =======================###
         t_vars = tl.layers.get_variables_with_name('u_net', True, True)
